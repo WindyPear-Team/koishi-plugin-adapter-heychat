@@ -7,7 +7,7 @@ import Internal from './internal'
 import { HeyMessageEncoder } from './message'
 
 export const logger = new Logger('adapter-heychat')
-export const name = 'adapter-mc'  // 插件名称
+export const name = 'adapter-heychat'  // 插件名称
 
 export const usage = `Hey Chat 黑盒适配器`
 

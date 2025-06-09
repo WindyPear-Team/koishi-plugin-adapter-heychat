@@ -9,7 +9,7 @@ import path from 'path';
 import axios from 'axios';
 import type { AxiosRequestConfig } from 'axios';
 
-const logger = new Logger('adapter-mc')
+const logger = new Logger('adapter-heychat')
 export default class Internal {
     constructor(private http: HTTP, private token: string, private endpoint: string) { }
     async sendMessage(payload: Dict) {
