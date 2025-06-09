@@ -1,0 +1,121 @@
+import HeyBot from './'
+import { logger } from './'
+import * as Hey from './types'
+import { Context, h, Dict, MessageEncoder } from 'koishi'
+
+export class HeyMessageEncoder<C extends Context> extends MessageEncoder<C, HeyBot<C>> {
+  private content: string
+  // 存储图片的 URL 和信息，杂鱼♡
+  private imageUrl: string | null = null;
+  private imageWidth: number = 0;
+  private imageHeight: number = 0;
+
+  private payload: Hey.SendMessagePayload;
+
+  // 在 prepare 中初始化 payload
+  async prepare() {
+    this.content = ''
+    this.imageUrl = null; // 每次准备都清空图片信息，杂鱼♡
+    this.imageWidth = 0;
+    this.imageHeight = 0;
+
+    this.payload = {
+      msg: '',
+      msg_type: 4, // 默认是 markdown 消息，杂鱼♡
+      heychat_ack_id: this.session.messageId, // ack_id 用 session.messageId，杂鱼♡
+      reply_id: '',
+      room_id: this.channelId.split(':')[0], // room_id 从 channelId 里取，杂鱼♡
+      addition: '{"img_files_info":[]}',
+      at_user_id: '',
+      at_role_id: '',
+      mention_channel_id: '',
+      channel_id: this.channelId.split(':')[1], // channel_id 也从 channelId 里取，杂鱼♡
+      channel_type: 1,
+    };
+  }
+
+  // 将发送好的消息添加到 results 中
+  async addResult(data: any) {
+    const message = data
+    this.results.push(message)
+    const session = this.bot.session()
+    session.event.message = message
+    session.app.emit(session, 'send', session)
+    //logger.info(this.results)
+  }
+
+  // 发送缓冲区内的消息
+  async flush() {
+    if (this.imageUrl && this.content.length === 0) {
+      this.payload.msg_type = 3; // 设置为图片消息类型
+      this.payload.img = this.imageUrl; 
+      delete this.payload.addition;
+      delete this.payload.msg;
+
+      const message = await this.bot.internal.sendMessage(this.payload);
+      await this.addResult(message);
+    } else if (this.content.length > 0) {
+      this.payload.msg = this.content; // 将组装好的内容赋值给 msg
+
+      if (this.imageUrl) {
+        this.payload.addition = JSON.stringify({
+          img_files_info: [{
+            url: this.imageUrl,
+            width: this.imageWidth,
+            height: this.imageHeight,
+          }],
+        });
+      } else {
+        this.payload.addition = '{"img_files_info":[]}';
+      }
+
+      const message = await this.bot.internal.sendMessage(this.payload);
+      await this.addResult(message);
+    }
+    this.content = '';
+    this.imageUrl = null;
+    this.imageWidth = 0;
+    this.imageHeight = 0;
+    this.payload.msg = '';
+    this.payload.at_user_id = ''; // 清空 @ 信息
+    this.payload.at_role_id = '';
+    this.payload.mention_channel_id = '';
+    this.payload.msg_type = 4; // 恢复默认消息类型
+  }
+
+  // 遍历消息元素
+  async visit(element: h) {
+    const { type, attrs, children } = element
+    if (type === 'text') {
+      this.content += h.escape(attrs.content)
+    } else if (type === 'at') {
+      if (attrs.id) {
+        this.content += `@{id:${attrs.id}}`;
+        this.payload.at_user_id = this.payload.at_user_id ? `${this.payload.at_user_id},${attrs.id}` : attrs.id; // 逗号分隔多个 at 用户，杂鱼♡
+        this.payload.msg_type = 10;
+      } else if (attrs.role) {
+        this.content += `@{id:${attrs.role}}`;
+        this.payload.at_role_id = this.payload.at_role_id ? `${this.payload.at_role_id},${attrs.role}` : attrs.role; // 逗号分隔多个 at 角色，杂鱼♡
+      }
+    } else if (type === 'sharp') {
+      if (attrs.id) {
+        this.content += ` #{id:${attrs.id}} `;
+        this.payload.mention_channel_id = this.payload.mention_channel_id ? `${this.payload.mention_channel_id},${attrs.id}` : attrs.id; // 逗号分隔多个提及频道，杂鱼♡
+        this.payload.channel_id = attrs.id;
+      }
+    } else if (type === 'image' && attrs.url) {
+      const uploadedImage = await this.bot.internal.uploadImage(attrs.url);
+      if (uploadedImage) {
+        this.imageUrl = uploadedImage.url;
+        this.imageWidth = uploadedImage.width || 0;
+        this.imageHeight = uploadedImage.height || 0;
+      }
+      this.content += `![]( ${attrs.url} )`; 
+    } else if (type === 'p' || type === 'br') {
+        this.content += '\n\n'; // 按照文档，使用双换行
+        await this.render(children);
+    } else {
+        await this.render(children);
+    }
+  }
+}
