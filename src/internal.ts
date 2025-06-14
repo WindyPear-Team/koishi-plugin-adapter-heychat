@@ -13,18 +13,23 @@ const logger = new Logger('adapter-heychat')
 export default class Internal {
     constructor(private http: HTTP, private token: string, private endpoint: string) { }
     async sendMessage(payload: Dict) {
-        return this.http.post(`${this.endpoint}/v2/channel_msg/send`, payload, {
+        // logger.info(payload)
+        return this.http.post(`${this.endpoint}/v2/channel_msg/send?chat_os_type=bot&client_type=heybox_chat&chat_version=999.0.0&chat_version=1.24.5&token=${this.token}`, payload, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
-            },
-        })
+                'Content-Type': 'application/json',
+                token: this.token
+            }
+        }
+        )
     }
     async sendPrivateMessage(payload: Dict) {
-        return this.http.post(`${this.endpoint}/v3/msg/user`, payload, {
+        return this.http.post(`${this.endpoint}/v3/msg/user?chat_os_type=bot&client_type=heybox_chat&chat_version=999.0.0&chat_version=1.24.5&token=${this.token}`, payload, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
-            },
-        })
+                'Content-Type': 'application/json',
+                token: this.token
+            }
+        }
+        )
     }
     async uploadImage(image: string | Buffer | any): Promise<string> {
         const form = new FormData()
@@ -97,7 +102,7 @@ export default class Internal {
                 // logger.info('图片值:', value);
             }
 
-            const uploadUrl = 'https://chat-upload.xiaoheihe.cn/upload';
+            const uploadUrl = `https://chat-upload.xiaoheihe.cn/upload?chat_os_type=bot&client_type=heybox_chat&chat_version=999.0.0&chat_version=1.24.5&token=${this.token}`;
             // logger.info(`尝试使用 axios 发送图片请求到: ${uploadUrl}`);
 
             const axiosConfig: AxiosRequestConfig = {
@@ -124,7 +129,7 @@ export default class Internal {
                 logger.error(`Axios 响应头:`, error.response.headers);
             }
             for (const [key, value] of form.entries()) {
-                logger.info(key, value);
+                // logger.info(key, value);
             }
             throw new Error(`图片上传失败：${error.message}`);
         }

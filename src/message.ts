@@ -5,7 +5,6 @@ import { Context, h, Dict, MessageEncoder } from 'koishi'
 
 export class HeyMessageEncoder<C extends Context> extends MessageEncoder<C, HeyBot<C>> {
   private content: string
-  // 存储图片的 URL 和信息，杂鱼♡
   private imageUrl: string | null = null;
   private imageWidth: number = 0;
   private imageHeight: number = 0;
@@ -15,21 +14,21 @@ export class HeyMessageEncoder<C extends Context> extends MessageEncoder<C, HeyB
   // 在 prepare 中初始化 payload
   async prepare() {
     this.content = ''
-    this.imageUrl = null; // 每次准备都清空图片信息，杂鱼♡
+    this.imageUrl = null;
     this.imageWidth = 0;
     this.imageHeight = 0;
 
     this.payload = {
       msg: '',
-      msg_type: 4, // 默认是 markdown 消息，杂鱼♡
-      heychat_ack_id: this.session.messageId, // ack_id 用 session.messageId，杂鱼♡
+      msg_type: 4,
+      heychat_ack_id: this.session.messageId,
       reply_id: '',
-      room_id: this.channelId.split(':')[0], // room_id 从 channelId 里取，杂鱼♡
+      room_id: this.channelId.split(':')[0],
       addition: '{"img_files_info":[]}',
       at_user_id: '',
       at_role_id: '',
       mention_channel_id: '',
-      channel_id: this.channelId.split(':')[1], // channel_id 也从 channelId 里取，杂鱼♡
+      channel_id: this.channelId.split(':')[1],
       channel_type: 1,
     };
   }
@@ -87,6 +86,9 @@ export class HeyMessageEncoder<C extends Context> extends MessageEncoder<C, HeyB
   async visit(element: h) {
     const { type, attrs, children } = element
     if (type === 'text') {
+      // if (this.content !== '') {
+      //   this.content += '\n\n';
+      // }
       this.content += h.escape(attrs.content)
     } else if (type === 'at') {
       if (attrs.id) {

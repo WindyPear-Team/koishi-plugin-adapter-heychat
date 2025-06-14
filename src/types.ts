@@ -46,7 +46,7 @@ interface CommandOption {
 export interface CommandInfo {
     id: string;
     name: string;
-    options: CommandOption[];
+    options?: CommandOption[];
     type: number;
 }
 
