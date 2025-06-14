@@ -1,5 +1,4 @@
 import HeyBot from './'
-import { logger } from './'
 import * as Hey from './types'
 import { Context, h, Dict, MessageEncoder } from 'koishi'
 

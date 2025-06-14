@@ -1,7 +1,4 @@
-import { Context, h, HTTP, Dict, Logger } from 'koishi'
-import HeyBot from './'
-import * as Hey from './types'
-import * as Util from './utils'
+import { HTTP, Dict, Logger } from 'koishi'
 import { FormData, File } from 'formdata-node'
 import { fileFromPath } from 'formdata-node/file-from-path';
 import * as mime from 'mime-types';

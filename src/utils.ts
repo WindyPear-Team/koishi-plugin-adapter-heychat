@@ -3,8 +3,6 @@ import { Bot, Context, h, Session, Universal, Logger } from 'koishi'
 import * as Hey from './types'
 import HeyBot from './'
 
-const logger = new Logger('adapter-heychat');
-
 // 导出一个函数，用于适配Heychat会话
 export function adaptSession<C extends Context = Context>(bot: HeyBot<C>, input: Hey.Event) {
     const session = bot.session()

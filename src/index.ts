@@ -1,5 +1,4 @@
 import { Adapter, Context, Logger, Bot, Schema } from 'koishi'
-import { WebSocket } from '@satorijs/protocol'
 import * as Hey from './types'
 import { adaptSession } from './utils'
 import Internal from './internal'
@@ -58,7 +57,7 @@ export class HeyAdapter<C extends Context> extends Adapter.WsClient<C, HeyBot<C>
   }
 
   accept() {
-    if (this.socket.readyState === WebSocket.OPEN) {
+    if (this.socket.readyState === 1) {
       this.bot.online()
       this._ping = setInterval(() => this.heartbeat(), 30000)
     }
