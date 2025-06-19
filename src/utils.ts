@@ -55,7 +55,7 @@ export function adaptSession<C extends Context = Context>(bot: HeyBot<C>, input:
             } else {
                 session.type = 'group-member-removed'
             }
-            session.event.selfId = input.data.bot_id.toString()
+            // session.event.selfId = input.data.bot_id.toString()
             // session.event.user.id = input.data.sender_info.user_id.toString()
             // session.event.user.isBot = input.data.sender_info.bot
             // session.event.user.avatar = input.data.sender_info.avatar
