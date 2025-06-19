@@ -10,7 +10,7 @@ export function adaptSession<C extends Context = Context>(bot: HeyBot<C>, input:
     switch (input.type) {
         case '50': {
             session.type = 'message'
-            session.event.selfId = input.data.bot_id.toString()
+            // if(input.data.bot_id.toString()){session.event.selfId = input.data.bot_id.toString()}
             session.event.user = {
                 id: input.data.sender_info.user_id.toString(),
                 isBot: input.data.sender_info.bot,
