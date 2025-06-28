@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-adapter-heychat",
   "description": "黑盒（heychat）黑盒适配器",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
