@@ -88,6 +88,7 @@ export class HeyMessageEncoder<C extends Context> extends MessageEncoder<C, HeyB
       // if (this.content !== '') {
       //   this.content += '\n\n';
       // }
+      this.content += '\n'
       this.content += h.escape(attrs.content)
     } else if (type === 'at') {
       if (attrs.id) {
