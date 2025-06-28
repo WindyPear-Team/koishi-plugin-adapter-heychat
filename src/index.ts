@@ -108,6 +108,7 @@ namespace HeyBot {
     endpoint: string
     token: string
     optionname?: string
+    optionname1?: string
     retryTimes?: number
     retryInterval?: number
     retryLazy?: number
@@ -117,7 +118,8 @@ namespace HeyBot {
     botid: Schema.string().required().description('机器人ID'),
     endpoint: Schema.string().description('API地址').default('https://chat.xiaoheihe.cn/chatroom'),
     token: Schema.string().required().description('API密钥'),
-    optionname: Schema.string().description('接在Koishi指令后的指标名称').default('o'),
+    optionname: Schema.string().description('接在Koishi指令后的指标名称（带空格）').default('o'),
+    optionname1: Schema.string().description('接在Koishi指令后的指标名称（不带空格）').default('p'),
     retryTimes: Schema.number().description('初次连接时的最大重试次数。').default(3),
     retryInterval: Schema.number().description('初次连接时的重试时间间隔。').default(1000),
     retryLazy: Schema.number().description('连接关闭后的重试时间间隔。').default(1000),
