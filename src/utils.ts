@@ -44,7 +44,7 @@ export function adaptSession<C extends Context = Context>(bot: HeyBot<C>, input:
             session.timestamp = input.timestamp
             session.event.message = {
                 id: input.data.msg_id,
-                elements: parseMessageElement(input.data.command_info),
+                elements: parseMessageElement(input.data.command_info, bot.config.optionname),
             }
             // logger.info(session)
             break;
@@ -90,9 +90,13 @@ export function adaptSession<C extends Context = Context>(bot: HeyBot<C>, input:
     }
     return session
 }
-export function parseMessageElement(data: Hey.CommandInfo): h[] {
+export function parseMessageElement(data: Hey.CommandInfo, optionname: string): h[] {
     let elements: h[] = []
     elements.push(h.text(data.name))
+    const lastoption = data.options?.find(item => item.name === optionname);
+    if (lastoption) {
+        elements.push(h.text(` ${lastoption.value}`))
+    }
     if (data.options) {
         data.options.map(option => {
             switch (option.type) {
