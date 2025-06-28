@@ -2,6 +2,7 @@
 import { Bot, Context, h, Session, Universal, Logger } from 'koishi'
 import * as Hey from './types'
 import HeyBot from './'
+// import { logger } from './'
 
 // 导出一个函数，用于适配Heychat会话
 export function adaptSession<C extends Context = Context>(bot: HeyBot<C>, input: Hey.Event) {
@@ -44,7 +45,7 @@ export function adaptSession<C extends Context = Context>(bot: HeyBot<C>, input:
             session.timestamp = input.timestamp
             session.event.message = {
                 id: input.data.msg_id,
-                elements: parseMessageElement(input.data.command_info, bot.config.optionname, bot.config.option1),
+                elements: parseMessageElement(input.data.command_info, bot.config.optionname, bot.config.optionname1),
             }
             // logger.info(session)
             break;
@@ -90,40 +91,35 @@ export function adaptSession<C extends Context = Context>(bot: HeyBot<C>, input:
     }
     return session
 }
-export function parseMessageElement(data: Hey.CommandInfo, optionname: string, optionname1: string): h[] {
+function parseMessageElement(data: Hey.CommandInfo, optionname: string, optionname1: string): h[] {
     let elements: h[] = []
-    elements.push(h.text(data.name))
+    elements.push(h.text(data.name.trim()))
     const lastoption = data.options?.find(item => item.name === optionname);
     if (lastoption) {
         elements.push(h.text(` ${lastoption.value}`))
     }
     const lastoption1 = data.options?.find(item => item.name === optionname1);
     if (lastoption1) {
-        elements.push(h.text(`${lastoption.value}`))
+        elements.push(h.text(`${lastoption1.value}`))
     }
     if (data.options) {
         data.options.map(option => {
-            switch (option.type) {
-                case 5:
-                case 4:
-                case 3: {
-                    elements.push(h('text', { content: ` --${option.name}=${option.value}` }));
-                    break;
-                }
-                case 6: {
-                    elements.push(h('text', { content: ` --${option.name}=` }));
-                    elements.push(h('at', { id: option.value }));
+            if (option.name !== optionname && option.name !== optionname1) {
+                switch (option.type) {
+                    case 5:
+                    case 4:
+                    case 3: {
+                        elements.push(h('text', { content: ` --${option.name}=${option.value}` }));
+                        break;
+                    }
+                    case 6: {
+                        elements.push(h('text', { content: ` --${option.name}=` }));
+                        elements.push(h('at', { id: option.value }));
+                    }
                 }
             }
         })
     }
+    // logger.info(elements)
     return elements
-}
-export function parseMessage(data: Hey.CommandInfo) {
-    // 将options一个个接在name后面
-    const name = data.name
-    const options = data.options.map(option => {
-        return ` --${option.name}=${option.value}`
-    }).join('')
-    return `${name}${options}`
 }
